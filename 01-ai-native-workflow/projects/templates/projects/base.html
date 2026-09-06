@@ -1,0 +1,32 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>{% block title %}Studyroom{% endblock %} | Studyroom</title>
+	<link rel="stylesheet" href="{% static 'projects/app.css' %}">
+</head>
+<body>
+	<div class="shell">
+		<aside class="sidebar">
+			<a class="brand" href="{% url 'dashboard' %}"><span class="brand-mark">S</span><span class="brand-text">Studyroom</span></a>
+			<div class="nav-label">Workspace</div>
+			<a class="nav-link active" href="{% url 'dashboard' %}"><span>◈</span><span>Overview</span></a>
+			<a class="nav-link" href="{% url 'project-create' %}"><span>＋</span><span>New project</span></a>
+			<div class="sidebar-footer">
+				<div class="user-name">{{ request.user.get_full_name|default:request.user.username }}</div>
+				<div class="user-email">Your study workspace</div>
+				<a class="nav-link" href="{% url 'logout' %}">↪ <span>Log out</span></a>
+			</div>
+		</aside>
+		<main class="main">
+			<header class="topbar">
+				<div class="breadcrumb">Workspace <span>/</span> {% block breadcrumb %}Overview{% endblock %}</div>
+				<div class="topbar-actions"><button class="icon-button" type="button" aria-label="Notifications">♢</button><div class="avatar">{{ request.user.username|slice:':1'|upper }}</div></div>
+			</header>
+			<div class="content">{% block content %}{% endblock %}</div>
+		</main>
+	</div>
+	<script src="{% static 'projects/app.js' %}"></script>
+</body>
+</html>

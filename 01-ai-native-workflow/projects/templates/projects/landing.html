@@ -1,0 +1,33 @@
+{% load static %}<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Studyroom | AI Study Project Manager</title>
+  <link rel="stylesheet" href="{% static 'projects/app.css' %}">
+  <style>
+    .landing { background: #f6f7f2; min-height: 100vh; overflow: hidden; }
+    .landing-nav { align-items: center; display: flex; justify-content: space-between; padding: 26px clamp(22px, 7vw, 100px); }
+    .landing-nav .brand { color: #123b3a; margin: 0; }
+    .landing-links { align-items: center; display: flex; gap: 22px; font-size: 14px; font-weight: 700; }
+    .landing-main { display: grid; gap: 50px; grid-template-columns: minmax(0, .95fr) minmax(380px, .8fr); margin: 5vh auto 0; max-width: 1180px; padding: 40px 30px 100px; }
+    .landing h1 { color: #123b3a; font-size: clamp(48px, 7vw, 88px); margin: 14px 0 22px; }
+    .landing-copy { color: #718080; font-size: 18px; max-width: 500px; }
+    .landing-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+    .landing-visual { align-items: center; background: #123b3a; border-radius: 18px; box-shadow: 0 25px 55px rgba(18,59,58,.18); display: flex; min-height: 430px; overflow: hidden; padding: 30px; position: relative; }
+    .landing-visual::after { background: #f4c95d; border-radius: 50%; content: ""; height: 220px; position: absolute; right: -70px; top: -60px; width: 220px; }
+    .mock-window { background: #f6f7f2; border-radius: 12px; box-shadow: 0 18px 35px rgba(0,0,0,.15); padding: 20px; position: relative; width: 100%; z-index: 1; }
+    .mock-top { display: flex; gap: 6px; margin-bottom: 25px; }
+    .mock-dot { background: #ef785f; border-radius: 50%; height: 7px; width: 7px; }
+    .mock-heading { color: #123b3a; font-family: Georgia, serif; font-size: 25px; margin-bottom: 18px; }
+    .mock-task { align-items: center; background: #fff; border: 1px solid #e1e7e1; border-radius: 8px; display: flex; gap: 10px; margin-top: 8px; padding: 12px; }
+    .mock-check { background: #0e7c72; border-radius: 50%; height: 15px; width: 15px; }
+    .mock-line { background: #dfe8e2; border-radius: 99px; height: 8px; width: 65%; }
+    @media (max-width: 760px) { .landing-main { grid-template-columns: 1fr; margin-top: 2vh; padding-top: 20px; } .landing-visual { min-height: 300px; } .landing-links span { display: none; } }
+  </style>
+</head>
+<body class="landing">
+  <nav class="landing-nav"><a class="brand" href="{% url 'home' %}"><span class="brand-mark">S</span><span class="brand-text">Studyroom</span></a><div class="landing-links"><span>Turn material into momentum</span><a href="{% url 'login' %}">Log in</a><a class="button" href="{% url 'register' %}">Create account</a></div></nav>
+  <main class="landing-main"><section><div class="eyebrow">AI study project manager</div><h1>Make progress<br>that compounds.</h1><p class="landing-copy">Turn your course PDFs into a clear weekly roadmap, stay on track, and always know what to do next.</p><div class="landing-actions"><a class="button" href="{% url 'register' %}">Build your first roadmap →</a><a class="button secondary" href="{% url 'login' %}">I already have an account</a></div></section><section class="landing-visual"><div class="mock-window"><div class="mock-top"><span class="mock-dot"></span><span class="mock-dot" style="background:#f4c95d"></span><span class="mock-dot" style="background:#76b9a6"></span></div><div class="eyebrow">This week</div><div class="mock-heading">Your roadmap is ready.</div><div class="mock-task"><span class="mock-check"></span><div class="mock-line"></div></div><div class="mock-task"><span class="mock-check" style="background:#f4c95d"></span><div class="mock-line" style="width:82%"></div></div><div class="mock-task"><span class="mock-check" style="background:#e1e7e1"></span><div class="mock-line" style="width:48%"></div></div></div></section></main>
+</body>
+</html>

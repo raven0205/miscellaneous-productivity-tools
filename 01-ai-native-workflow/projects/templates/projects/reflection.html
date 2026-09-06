@@ -1,0 +1,3 @@
+{% extends "projects/base.html" %}
+{% block title %}Reflection{% endblock %}{% block breadcrumb %}{{ project.title }} / Reflection{% endblock %}
+{% block content %}<div style="max-width:760px"><div class="eyebrow">A final look back</div><h1>You made it.</h1><p class="lede">A short reflection helps you notice what worked. It stays with this project and won’t change future recommendations.</p><section class="panel" style="margin-top:28px"><form method="post">{% csrf_token %}<p><label for="id_what_went_well">What went well?</label>{{ form.what_went_well }}</p><p><label for="id_what_was_difficult">What was difficult?</label>{{ form.what_was_difficult }}</p><div class="form-actions"><button type="submit">Save reflection</button></div></form></section></div>{% endblock %}
