@@ -1,0 +1,293 @@
+openapi: 3.1.0
+info:
+  title: AI Expense Splitter API
+  version: 1.0.0
+  description: >-
+    Minimal API contract for the existing frontend. This contract is based on the
+    current frontend implementation in frontend/api.js and frontend/app.js.
+servers:
+  - url: http://localhost:8000
+paths:
+  /api/groups:
+    get:
+      summary: Get all groups
+      operationId: getGroups
+      responses:
+        '200':
+          description: List of groups
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Group'
+    post:
+      summary: Create a group
+      operationId: createGroup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateGroupRequest'
+      responses:
+        '201':
+          description: Created group
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Group'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/groups/{group_id}/members:
+    post:
+      summary: Add a member to a group
+      operationId: addMember
+      parameters:
+        - in: path
+          name: group_id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateMemberRequest'
+      responses:
+        '201':
+          description: Created member
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Member'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Group not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/groups/{group_id}/expenses:
+    post:
+      summary: Create an expense for a group
+      operationId: createExpense
+      parameters:
+        - in: path
+          name: group_id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateExpenseRequest'
+      responses:
+        '201':
+          description: Created expense
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Expense'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Group not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/ai/parse-receipt:
+    post:
+      summary: Parse receipt text into expense fields
+      operationId: parseReceipt
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReceiptParseRequest'
+      responses:
+        '200':
+          description: Parsed receipt result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReceiptParseResponse'
+        '400':
+          description: Invalid receipt text
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+        - detail
+      properties:
+        detail:
+          type: string
+          description: Human-readable error message.
+
+    Member:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          description: Unique member identifier.
+        name:
+          type: string
+          description: Display name of the member.
+
+    ExpenseSplit:
+      type: object
+      required:
+        - member_id
+        - amount
+      properties:
+        member_id:
+          type: string
+          description: Member identifier associated with this split.
+        amount:
+          type: number
+          format: float
+          description: Dollar amount assigned to the member.
+
+    Expense:
+      type: object
+      required:
+        - id
+        - description
+        - total_amount
+        - payer_id
+        - splits
+      properties:
+        id:
+          type: string
+          description: Unique expense identifier.
+        description:
+          type: string
+          description: Expense description.
+        total_amount:
+          type: number
+          format: float
+          description: Total expense amount.
+        payer_id:
+          type: string
+          description: Identifier of the member who paid.
+        splits:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExpenseSplit'
+
+    Group:
+      type: object
+      required:
+        - id
+        - name
+        - members
+        - expenses
+      properties:
+        id:
+          type: string
+          description: Unique group identifier.
+        name:
+          type: string
+          description: Group name.
+        members:
+          type: array
+          items:
+            $ref: '#/components/schemas/Member'
+        expenses:
+          type: array
+          items:
+            $ref: '#/components/schemas/Expense'
+
+    CreateGroupRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Name of the new group.
+
+    CreateMemberRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          description: Name of the member to add.
+
+    CreateExpenseRequest:
+      type: object
+      required:
+        - description
+        - total_amount
+        - payer_id
+        - splits
+      properties:
+        description:
+          type: string
+          description: Expense description.
+        total_amount:
+          type: number
+          format: float
+          description: Total expense amount.
+        payer_id:
+          type: string
+          description: Identifier of the member who paid.
+        splits:
+          type: array
+          items:
+            $ref: '#/components/schemas/ExpenseSplit'
+
+    ReceiptParseRequest:
+      type: object
+      required:
+        - receipt_text
+      properties:
+        receipt_text:
+          type: string
+          description: Raw receipt text from the UI.
+
+    ReceiptParseResponse:
+      type: object
+      required:
+        - description
+        - total_amount
+      properties:
+        description:
+          type: string
+          description: Best-effort parsed description.
+        total_amount:
+          type: number
+          format: float
+          description: Best-effort parsed total amount.

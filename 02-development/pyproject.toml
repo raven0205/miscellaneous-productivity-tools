@@ -1,0 +1,20 @@
+[project]
+name = "02-development"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Teo Hui Qian", email = "73115813+raven0205@users.noreply.github.com" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.141.1",
+    "uvicorn>=0.52.4",
+]
+
+[project.scripts]
+02-development = "02_development:main"
+
+[build-system]
+requires = ["uv_build>=0.12.12,<0.13.0"]
+build-backend = "uv_build"
