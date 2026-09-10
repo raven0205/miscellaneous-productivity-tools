@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Expense Splitter</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="panel">
+          <p class="eyebrow">Groups</p>
+          <h2>Trips & events</h2>
+
+          <form id="create-group-form" class="stacked-form">
+            <label for="group-name">New group</label>
+            <div class="inline-form">
+              <input id="group-name" name="groupName" type="text" placeholder="e.g. Summer trip" required />
+              <button type="submit">Create</button>
+            </div>
+          </form>
+
+          <div id="group-list" class="group-list" aria-live="polite"></div>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Expense Splitter</p>
+            <h1 id="group-title">Select a group</h1>
+          </div>
+        </header>
+
+        <section class="stats-grid">
+          <div class="panel stat-card">
+            <h3>Members</h3>
+            <div id="member-count" class="stat-value">0</div>
+          </div>
+          <div class="panel stat-card">
+            <h3>Expenses</h3>
+            <div id="expense-count" class="stat-value">0</div>
+          </div>
+          <div class="panel stat-card">
+            <h3>Net total</h3>
+            <div id="net-total" class="stat-value">$0.00</div>
+          </div>
+        </section>
+
+        <section class="content-grid">
+          <div class="panel">
+            <div class="section-header">
+              <h3>Members</h3>
+            </div>
+
+            <form id="member-form" class="stacked-form">
+              <label for="member-name">Add participant</label>
+              <div class="inline-form">
+                <input id="member-name" name="memberName" type="text" placeholder="e.g. Alex" required />
+                <button type="submit">Add</button>
+              </div>
+            </form>
+
+            <ul id="member-list" class="member-list" aria-live="polite"></ul>
+          </div>
+
+          <div class="panel">
+            <div class="section-header">
+              <h3>Balance summary</h3>
+            </div>
+            <div id="balance-summary" class="balance-summary" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <section class="panel expense-panel">
+          <div class="section-header">
+            <h3>Add expense</h3>
+          </div>
+
+          <form id="expense-form" class="expense-form">
+            <div class="form-grid two-up">
+              <div class="field">
+                <label for="expense-description">Description</label>
+                <input id="expense-description" name="description" type="text" placeholder="Dinner, hotel, rideshare..." required />
+              </div>
+
+              <div class="field">
+                <label for="expense-total">Total amount</label>
+                <div class="currency-input">
+                  <span>$</span>
+                  <input id="expense-total" name="totalAmount" type="number" min="0.01" step="0.01" placeholder="0.00" required />
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="expense-payer">Paid by</label>
+                <select id="expense-payer" name="payerId"></select>
+              </div>
+
+              <div class="field">
+                <label for="split-type">Split type</label>
+                <select id="split-type" name="splitType">
+                  <option value="even">Even split</option>
+                  <option value="customAmounts">Custom amounts</option>
+                  <option value="customPercentages">Custom percentages</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="receipt-box">
+              <label for="receipt-text">AI receipt parser</label>
+              <textarea id="receipt-text" rows="4" placeholder="Paste a receipt or bill summary. The mock AI will extract the total and description."></textarea>
+              <button id="parse-receipt-btn" type="button" class="secondary-button">Use AI to parse receipt</button>
+            </div>
+
+            <div class="split-section">
+              <h4>Split details</h4>
+              <div id="split-rows" class="split-rows" aria-live="polite"></div>
+            </div>
+
+            <button type="submit" class="primary-button">Save expense</button>
+          </form>
+        </section>
+
+        <section class="content-grid lower-grid">
+          <div class="panel">
+            <div class="section-header">
+              <h3>Expenses</h3>
+            </div>
+            <div id="expense-list" class="expense-list" aria-live="polite"></div>
+          </div>
+
+          <div class="panel">
+            <div class="section-header">
+              <h3>Settlements</h3>
+            </div>
+            <div id="settlement-list" class="settlement-list" aria-live="polite"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div id="status-toast" class="status-toast" aria-live="polite"></div>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
