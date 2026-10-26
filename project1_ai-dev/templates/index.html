@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Marketing OS</title>
+    <!-- Use CDN for Tailwind since npm is not available -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 900: '#0F172A', 800: '#1E293B', primary: '#4F46E5', success: '#10B981', danger: '#E11D48' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans h-screen flex">
+    <!-- Sidebar -->
+    <aside class="w-64 bg-brand-900 text-white flex flex-col">
+        <div class="p-6 text-xl font-bold border-b border-gray-800">
+            AI Marketing OS
+        </div>
+        <nav class="flex-1 p-4 space-y-2">
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center gap-3 px-4 py-3 rounded-md transition-colors bg-brand-primary">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                Dashboard
+            </button>
+            <button onclick="switchTab('approvals')" id="nav-approvals" class="w-full flex items-center gap-3 px-4 py-3 rounded-md transition-colors hover:bg-brand-800">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Approvals
+            </button>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-auto flex flex-col">
+        <header class="bg-white shadow-sm px-8 py-4 flex justify-between items-center">
+            <h1 id="page-title" class="text-2xl font-semibold text-gray-800 capitalize">Dashboard</h1>
+            <div class="flex items-center gap-2 text-sm text-gray-500">
+                <span class="text-brand-success">●</span> System Healthy
+            </div>
+        </header>
+
+        <div class="p-8">
+            <!-- Dashboard View -->
+            <div id="view-dashboard" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <h3 class="text-gray-500 font-medium mb-4">Revenue Per Recipient</h3>
+                        <p id="metric-rpr" class="text-3xl font-bold text-gray-900">...</p>
+                        <p class="text-sm text-brand-success mt-2">+12% from last week</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+                        <h3 class="text-gray-500 font-medium mb-4">Conversion Rate</h3>
+                        <p id="metric-cr" class="text-3xl font-bold text-gray-900">...</p>
+                        <p class="text-sm text-gray-500 mt-2">Active campaigns</p>
+                    </div>
+                    <div id="alert-card" class="p-6 rounded-xl shadow-sm border bg-white border-gray-100">
+                        <h3 class="text-gray-500 font-medium mb-4">System Alert Status</h3>
+                        <p id="metric-alert" class="text-3xl font-bold text-gray-900 capitalize">...</p>
+                        <p class="text-sm text-gray-500 mt-2">Responder Agent Active</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Approvals View -->
+            <div id="view-approvals" class="space-y-4 hidden">
+                <div id="approvals-container">Loading...</div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function switchTab(tab) {
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('view-approvals').classList.add('hidden');
+            document.getElementById('nav-dashboard').classList.replace('bg-brand-primary', 'hover:bg-brand-800');
+            document.getElementById('nav-approvals').classList.replace('bg-brand-primary', 'hover:bg-brand-800');
+
+            document.getElementById('view-' + tab).classList.remove('hidden');
+            document.getElementById('nav-' + tab).classList.replace('hover:bg-brand-800', 'bg-brand-primary');
+            document.getElementById('page-title').innerText = tab;
+
+            if (tab === 'dashboard') loadMetrics();
+            if (tab === 'approvals') loadApprovals();
+        }
+
+        async function loadMetrics() {
+            try {
+                const res = await fetch('/api/metrics');
+                const data = await res.json();
+                document.getElementById('metric-rpr').innerText = '$' + data.rpr.toFixed(2);
+                document.getElementById('metric-cr').innerText = data.conversionRate + '%';
+                document.getElementById('metric-alert').innerText = data.alertStatus;
+                
+                const alertCard = document.getElementById('alert-card');
+                if (data.alertStatus === 'critical') {
+                    alertCard.classList.replace('bg-white', 'bg-red-50');
+                    alertCard.classList.replace('border-gray-100', 'border-red-200');
+                } else {
+                    alertCard.classList.replace('bg-red-50', 'bg-white');
+                    alertCard.classList.replace('border-red-200', 'border-gray-100');
+                }
+            } catch (err) { console.error(err); }
+        }
+
+        async function loadApprovals() {
+            try {
+                const res = await fetch('/api/approvals');
+                const data = await res.json();
+                const container = document.getElementById('approvals-container');
+                if (data.length === 0) {
+                    container.innerHTML = '<div class="text-gray-500">No pending approvals. Great job!</div>';
+                    return;
+                }
+                
+                container.innerHTML = data.map(app => `
+                    <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex justify-between items-start mb-4">
+                        <div class="space-y-2 flex-1 pr-8">
+                            <div><span class="text-xs font-semibold text-gray-500 uppercase">Subject</span><p class="text-lg font-medium text-gray-900">${app.generated_subject}</p></div>
+                            <div><span class="text-xs font-semibold text-gray-500 uppercase">Body</span><p class="text-gray-700">${app.generated_body}</p></div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button onclick="handleAction(${app.id}, 'reject')" class="px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100">Reject</button>
+                            <button onclick="handleAction(${app.id}, 'approve')" class="px-4 py-2 bg-green-50 text-green-600 rounded-lg hover:bg-green-100">Approve & Send</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) { console.error(err); }
+        }
+
+        async function handleAction(id, action) {
+            await fetch('/api/approvals/' + id + '/' + action, { method: 'POST' });
+            loadApprovals();
+            loadMetrics(); // Update metrics behind the scenes
+        }
+
+        // Init
+        loadMetrics();
+    </script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+name: CI/CD Pipeline (Python)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'production'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+        
+    - name: Install Dependencies
+      run: |
+        pip install flask prometheus_client
+        
+    - name: Run Tests
+      run: |
+        python -m unittest discover tests
+
+  deploy-dev:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Build and Push Docker Images
+      run: |
+        echo "Building dev image..."
+        docker build -t myapp/backend:dev-${{ github.sha }} .
+        # docker push ...
+        
+    - name: Deploy to Dev
+      run: |
+        echo "Deploying dev version ${{ github.sha }}..."
+        # kubectl set image deployment/backend backend=myapp/backend:dev-${{ github.sha }}
+
+  deploy-prod:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Build and Push Docker Images
+      run: |
+        echo "Building prod image..."
+        docker build -t myapp/backend:prod-${{ github.sha }} .
+        # docker push ...
+        
+    - name: Deploy to Production
+      run: |
+        echo "Deploying prod version ${{ github.sha }}..."
+        # kubectl set image deployment/backend backend=myapp/backend:prod-${{ github.sha }}
+
+  rollback-on-failure:
+    needs: [deploy-dev, deploy-prod]
+    runs-on: ubuntu-latest
+    if: failure()
+    steps:
+    - name: Automated Rollback
+      run: |
+        echo "Deployment failed! Triggering automatic rollback to previous stable version."
+        # kubectl rollout undo deployment/backend

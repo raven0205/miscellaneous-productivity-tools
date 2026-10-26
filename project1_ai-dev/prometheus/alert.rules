@@ -1,0 +1,20 @@
+groups:
+- name: BusinessMetricsAlerts
+  rules:
+  - alert: HighRejectionRate
+    expr: rate(app_failed_approvals_total[5m]) > 2
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "High AI Campaign Rejection Rate"
+      description: "Human-in-the-loop is rejecting more than 2 campaigns per minute. The Responder Agent will mitigate."
+
+  - alert: LowConversionRate
+    expr: app_conversion_rate < 1.0
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Low Conversion Rate"
+      description: "AI campaign conversion rate has dropped below 1%."
